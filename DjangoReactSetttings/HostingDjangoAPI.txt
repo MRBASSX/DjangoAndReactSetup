@@ -1,0 +1,110 @@
+1. Deploy to github
+
+2. run venv
+
+3. python -m pip freeze > requirements.txt 
+
+
+IN WEB HOSTING TERMINAL
+
+4. git clone https://github.com/MRBASSX/Django.git
+
+
+Create Virtual Environment using
+5. mkvirtualenv --python=/usr/bin/python3.8 venv
+
+6.(venv)<---  pip install -r requirements.txt
+
+
+Setting Up Web app and WSGI
+
+Go To Web
+Add new Web App
+
+Source  code :"home/Username/ProjectName"
+
+Working Directory :"home/username"
+
+Virtual Environment Path : "home/username/.virtualenv/env"
+
+path
+/static/      /home/username/ProjectName/static/
+
+/media/       /home/username/projectName/media/
+
+
+WSGI 
+
+import os
+import sys
+from django.core.wsgi import get_wsgi_application
+from django.contrib.staticfiles.handlers import StaticFilesHandler
+
+path = os.path.expanduser('~/FolderContainingProject')
+
+if path not in sys.path:
+    sys.path.insert(0,path)
+    
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ProjectName.settings')
+application = get_wsgi_application()
+application = StaticFilesHandler(application)
+
+
+
+ADDING DATABASE( MYSQL) TO WEBSITE
+
+1. GO TO https://www.pythonanywhere.com/user/MRBASSX/databases/#id_mysql_tab
+
+
+2. Create database  and create passsword
+
+MySQL settings
+Connecting:
+Use these settings in your web applications.
+
+Database host address:MRBASSX.mysql.pythonanywhere-services.com
+Username:MRBASSX
+
+
+
+3. Paste this in your settings.py
+
+DATABASES = {
+    'default': {
+'ENGINE': 'django.db.backends.mysql',
+'NAME':  'MRBASSX$default',
+'USER':  'MRBASSX',
+'PASSWORD':  'learning419@',
+'HOST':  'MRBASSX.mysql.pythonanywhere-services.com',
+'PORT':  '3306',
+    }
+}
+
+
+
+Sooner419@
+
+UPLOADING  FILES
+
+
+path
+/static/      /home/username/ProjectFolder/static/
+
+/media/       /home/username/projectFolder/media/
+
+ 
+{% extends '../layout.html'%}
+
+{% block Title %}
+
+{{ "Home | THE-BRAINTECH" }}
+
+ {% endblock %}
+
+{% block content %}
+
+
+
+
+
+	{% endblock %}
