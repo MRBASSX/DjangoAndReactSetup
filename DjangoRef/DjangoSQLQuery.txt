@@ -1,0 +1,14 @@
+
+
+                       SEARCH
+
+AllProduct = Product.objects.raw("SELECT * FROM product_product WHERE name RLIKE  %s" ,["Laptop"])
+
+
+                        SINGLE 
+                      
+AllProduct = Product.objects.raw("SELECT * FROM product_product WHERE name =  %s" ,["Laptop"])
+
+                       LIMIT
+
+AllProduct = Product.objects.raw("SELECT * FROM product_product WHERE name RLIKE  %s limit 5" ,["Laptop"])

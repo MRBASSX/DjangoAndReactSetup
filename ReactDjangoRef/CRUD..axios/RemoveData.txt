@@ -1,0 +1,100 @@
+import React ,{ useEffect,useState } from "react";
+import axios from "axios";
+
+const RemoveData = (item)=>{
+  axios
+  .delete(`http://localhost:8000/api/todos//${item.id}/`)
+  .then((res) => { SetDeleted("Deleted");});
+}
+
+ <button
+                        className="btn btn-default add-to-cart border-primary text-primary  fs-5"
+                               onClick={()=>{RemoveData(news);}}
+                               >
+                                {deleted}
+                               <i className="fa fa-shopping-cart"></i>
+                               
+                              </button>    
+
+
+
+
+
+
+
+Remove Change Text
+
+METHOD 1
+
+const CustomBtn = (props) => {
+
+  const { item, index } = props;
+
+  const [waitText, setWaitText] = useState('Remove');
+
+  const waitThreeSeconds = () => {
+
+    setWaitText("Deleting...");
+
+    setTimeout(() => setWaitText('Deleted'), 3000);
+    UseEffect();
+  };
+
+
+  return (
+    <div >
+
+      <div onClick={waitThreeSeconds} className="btn btn-default add-to-cart border-primary text-primary  fs-5 myhover">
+         {waitText}
+      </div>
+    </div>
+  )
+}
+
+
+<CustomBtn item={news} key={index} index={index} />
+
+
+
+
+
+
+METHON 2
+
+const CustomBtn = () => {
+
+  const [waitText, setWaitText] = useState('Remove');
+
+  const waitThreeSeconds = () => {
+
+    setWaitText("Deleting...");
+
+    setTimeout(() => setWaitText('Deleted'), 4000);
+    UseEffect();
+  };
+
+
+  return (
+    <div >
+<div onClick={waitThreeSeconds} className="btn btn-default add-to-cart border-primary text-primary  fs-5 myhover">
+ {waitText}
+  </div>
+  </div>
+  )
+
+
+
+}
+
+<CustomBtn/>
+
+
+
+Method 3
+
+
+
+
+
+
+            

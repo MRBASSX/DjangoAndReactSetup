@@ -1,0 +1,31 @@
+from django.db.models.functions import Now
+
+Voyage.objects.filter(datedep__gt=Now())
+
+
+from datetime import date
+def func(request):
+   today = date.today()
+   data = Dibbs_Fields.objects.filter(
+               return_by__lt=today)
+
+
+
+return_by__lt # less than
+return_by__gt # greater than
+return_by__gte # greater than or equal to
+return_by__lte # less than or equal to
+
+class Box(models.Model):
+    nickname = models.CharField(max_length=30, blank=True, null = True)
+    content = models.TextField(validators=[MaxLengthValidator(550)])
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    date_posted = models.DateTimeField(auto_now_add=True)
+    expiry = models.DateTimeField(blank=True, null=True)
+
+
+now = timezone.now()
+Box.objects.filter(Q(expiry__gt=now) | Q(expiry=None))
+       OR
+from django.db.models.functions import Now
+Box.objects.filter(Q(expiry__gt=Now()) | Q(expiry=None))

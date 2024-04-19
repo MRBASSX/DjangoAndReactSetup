@@ -1,0 +1,82 @@
+pip install django-auth-remember
+
+IN SETTINGS
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'auth_remember.backend.AuthRememberBackend',
+)
+
+
+MIDDLEWARE_CLASSES = (
+    ...
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'auth_remember.middleware.AuthRememberMiddleware',
+    ...
+)
+
+
+INSTALLED_APPS = (
+    'auth_remember',
+)
+
+
+AUTH_REMEMBER_COOKIE_NAME = 'remember_token'
+AUTH_REMEMBER_COOKIE_AGE = 86400 * 28  # 4 weeks by default
+
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
+
+from auth_remember import remember_user
+remember_user(request, user)
+
+if request.method=='POST':                                                                                                                                                
+          username=request.POST.get('name')                                                                            
+          password=request.POST.get('psw')                                                    
+          try:                                                                                                             
+             remember = request.POST['checkbox']                                                                               
+             if remember:                                                                                       
+                 settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = False                                         
+         except:                                                                                              
+            is_private = False                                                                                         
+            settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = True 
+
+{% if user.is_fresh %}
+    This user session is fresh
+{% else %}
+    This user session is NOT fresh
+{% endif %}
+
+
+
+METHOD TWO
+
+class CustomLoginView(LoginView):
+    template_name = "authentication/login.html"
+    fields = "__all__"
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+
+        if self.request.method == "POST":
+            try:
+                remember_me = str(self.request.POST['checkbox'])
+                if remember_me: 
+             # This if statement can change, 
+             # but the purpose is checking remember me checkbox is checked or not.
+                   self.request.session.set_expiry(86400 * 28) # Here we extend session.
+                   print("Check")
+
+            except:
+                   # This part of code means, close session when browser is closed.
+                   self.request.session.set_expiry(0) 
+                   print("UnCheck")
+
+
+        else:
+             # GET method
+             if self.request.user.is_authenticated: 
+                print(" Remember ME !!!!")
+        return reverse_lazy('home')

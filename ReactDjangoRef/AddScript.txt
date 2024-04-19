@@ -1,0 +1,25 @@
+
+
+USING RAW JAVASCRIPT CODE
+
+<button type="button" class="addToCart" data-id="some data">Add to cart</button>
+<script>
+    let buttonsList = document.getElementsByClassName('addToCart');
+    for (button of buttonsList) {
+        button.addEventListener("click",(e)=>{
+            fetch('/path/to/your/product/api?product_id=' + e.target.getAttribute('data-id')).then((data) => {
+                 console.log('product added to cart!')
+            })
+        })
+    }
+</script>
+
+
+
+USING AXIO CODE FOR NODE.JS
+
+import axios from "axios";
+axios.get('/users')
+  .then(res => {
+    console.log(res.data);
+  });

@@ -1,0 +1,10 @@
+npm create vite@latest
+
+v Project name: ... React-project
+v Package name: ... react
+v Select a framework: » React
+v Select a variant: » JavaScript
+
+  cd React-project
+  npm install
+  npm run dev

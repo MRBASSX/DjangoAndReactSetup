@@ -1,0 +1,140 @@
+                                          
+                                               HOME-PAGE AND LOGIN-PAGE          
+
+1 . Create urls.py in the app Directory
+
+
+
+2.IN VIEW 
+ -->from django.contrib.auth.models import User
+from django.shortcuts import render
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+
+
+def index(request):
+    context = {"key": "I am at Home "}
+    return render(request, "authentication/home.html", context)
+
+
+class CustomLoginView(LoginView):
+    template_name = "authentication/login.html"
+    fields = "__all__"
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        if User.is_staff or User.is_superuser:
+            return reverse_lazy("admin")
+        else:
+            return reverse_lazy('')
+
+
+3.IN APP/URLS
+  --->from django.urls import path
+      from  .views import CustomLoginView
+
+
+
+urlpatterns = [
+
+     path("login/",CustomLoginView.as_view(),name="login")
+]
+
+
+
+4.IN URLS
+--->from django.contrib import admin
+from django.urls import path, include
+
+from authentication.views import index
+from django.views.generic.base import RedirectView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('admin/', RedirectView.as_view(url='/admin'),name="admin"),
+    path('', index, name="home"),
+    path("", include("authentication.urls"))
+]
+
+5.IN LOGIN.HTML
+----><h1> Login Page</h1>
+
+<form method="post" style="width:10%" align ="center">
+	{% csrf_token %}
+	{{form.as_p}}
+	<input type="submit" value="Login">
+</form>
+<P>Dont  have an account? <a href="{% url 'register' %}">Register</a></P>
+
+6.IN HOME.HTML
+---->
+{% if request.user.is_superuser or request.user.is_staff %}
+<a href="{% url 'admin' %}">AdminPage</a>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+<p>{{request.user}}</p>
+<p>{{key}}</p>
+<a href="{% url 'login' %}">Logout</a>
+{% else %}
+<a href="{% url 'login' %}">login</a>
+{% endif %}
+
+ 
+
+                                         HOME-PAGE AND REGISTER-PAGE 
+
+IN VIEW
+--->
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic import FormView
+
+class CustomRegisterView(FormView):
+    template_name = "authentication/register.html"
+    form_class = UserCreationForm
+    redirect_authenticated_user = True
+    success_url = reverse_lazy("home") # Automatically redirect to homepage after Registration
+
+    def form_valid(self, form):
+        user = form.save()  # Automatically Save Registering User
+        if user is not None:
+            login(self.request, user)  # Automatically log us in
+        return super(CustomRegisterView, self).form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect("home")  # Prevent User Registeration form from showing
+        return super(CustomRegisterView, self).get(request, *args, **kwargs)
+
+
+IN APP/URLS.PY
+from  .views import CustomRegisterView
+path("register/",CustomRegisterView.as_view(),name="register")
+
+
+IN REGESTER.HTML
+<h1> Register Page</h1>
+
+<form method="post" style="width:10%" align ="center">
+	{% csrf_token %}
+	{{form.as_p}}
+	<input type="submit" value="Register">
+</form>
+
+<P>Already have an account? <a href="{% url 'login'%}">Login</a></P>
+
+
+
+
+                                    HOME-PAGE AND LOGOUT 
+
+IN APP/URLS
+--->
+from django.contrib.auth.views import LogoutView
+path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
+
+
+
+
+

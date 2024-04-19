@@ -1,0 +1,49 @@
+import React ,{ useEffect,useState } from "react";
+import axios from "axios";
+
+function Form() {
+
+const [create,setCreate] = useState("Create Data");
+const [title,setTitle] = useState("");
+const [description,setDescription] = useState("");
+const [completed,setCompleted] = useState("false");
+
+const CreateData = (e)=>{
+    e.preventDefault();
+axios.post("http://localhost:8000/api/todos/", {
+    "title": title,
+    "description": description,
+    "completed":completed
+})
+  .then(function (response) {
+    console.log(response);
+    setCreate("Created");
+    
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+
+ 
+}
+
+    return (
+        <>
+        <form onSubmit={CreateData} className="form-control d-flex flex-column w-100" >
+        <label htmlFor="title">Title</label>
+        <input type="text" value={title}  onChange={(e)=>setTitle(e.target.value)}/>
+        <label htmlFor="description">Description</label>
+        <input type="text"  value={description}  onChange={(e)=>setDescription(e.target.value)}/>
+        <div>
+        <label htmlFor="complete">Completed</label>
+        <input type="checkbox"  value="true" onChange={(e)=>setCompleted(e.target.value)}/>
+        </div>
+        <input type="submit" value={create} />
+        </form>
+        </>
+    )
+    
+}
+
+export default Form;

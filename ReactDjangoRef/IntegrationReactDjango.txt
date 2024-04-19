@@ -1,0 +1,172 @@
+RUNNING WITH VITE SERVER(DEVELOPMENT MODE)
+
+ 1. Create A Folder(html as Name) in MainProgect Where Manage.py is
+
+ 2. Create A layout.html inside html folder
+
+ 3. Add This To The HTML Head (layout.html)
+            <script type="module" src="http://localhost:5173/@vite/client"></script>
+            <script type="module">
+            import RefreshRuntime from 'http://localhost:5173/@react-refresh'
+            RefreshRuntime.injectIntoGlobalHook(window)
+            window.$RefreshReg$ = () => {}
+            window.$RefreshSig$ = () => (type) => type
+            window.__vite_plugin_react_preamble_installed__ = true
+           </script>
+           <script type="module" src="http://localhost:5173/src/main.jsx"></script>
+
+ 4. IN PROJECT SETTINGS
+
+    TEMPLATES = [
+    {
+       
+        'DIRS': [BASE_DIR / "html"],
+        
+    },
+]
+  
+
+ 5.IN PROJECT URLS 
+     from django.views.generic import TemplateView
+     urlpatterns = [
+  
+    path("",TemplateView.as_view(template_name="layout.html"))
+]
+
+6.ADD THIS TO THE HTML BODY (layout.html)
+  <div id="root"></div>
+
+
+
+
+
+
+
+TO MAKE THE PICTURES VISIBLE
+
+ADD TO APP.JSX
+const  reactlogo = 'react.svg'
+const viteLogo = 'vite.svg'
+
+const reactLogoPath = `/static/${reactlogo}`
+const viteLogoPath = `/static/${viteLogo}`
+
+<a href="https://vitejs.dev" target="_blank">
+<img src={viteLogoPath} className="logo" alt="Vite logo" />
+</a>
+<a href="https://react.dev" target="_blank">
+<img src={reactLogoPath} className="logo react" alt="React logo" />
+</a>
+
+
+1. VITE.CONFIG.JS 
+
+   const cssFileName = 'index.min.css'
+
+
+   export default defineConfig({
+  plugins: [react()],
+
+  publicDir: './public',
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: (file)=>{
+          return `assets/css/${cssFileName}`
+
+        },
+        entryFileNames: (file)=>{
+          return `assets/js/[name].min.js`
+
+        },
+      }
+    }
+  }
+  // server: {
+  //   origin: 'http://127.0.0.1:8080',
+  // },
+})
+
+
+2. IN PROJECT SETTINGS
+
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+BASE_DIR / "dist",
+BASE_DIR / "public"
+   
+]
+
+STATIC_ROOT = BASE_DIR / "static"
+
+
+
+MIDDLEWARE = [
+    
+    'whitenoise.middleware.WhiteNoise.Middleware',
+   
+]
+INSTALLED_APPS = [
+   
+    "whitenoise.runserver_nostatic",
+    "django.contrib.staticfiles",
+   ]
+
+pip install whitenoise
+
+"django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
+
+
+
+
+
+
+
+RUNNING WITHOUT VITE SERVER(PRODUCTION MODE)
+
+
+TERMINAL : npm run build
+
+
+
+IN HTML FILE HEADER (LAYOUT.HTML)
+{% load static %}
+  <script type="module" crossorigin src="{% static '/assets/js/index.min.js'%}"></script>
+  <link  rel="stylesheet" href="{% static '/assets/css/index.min.css'%}">
+
+IN SETTINGS 
+import os
+
+INTERNAL_IPS=[
+   
+   "localhost",
+   "127.0.0.1",
+
+]
+
+
+
+DEBUG = False
+
+ALLOWED_HOSTS = ["*"]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+BASE_DIR / "dist",
+BASE_DIR / "public"   
+]
+STATIC_ROOT = BASE_DIR / "static"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
+
+IN URLS
+from django.conf import settings
+from django.conf.urls.static import static
+  + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

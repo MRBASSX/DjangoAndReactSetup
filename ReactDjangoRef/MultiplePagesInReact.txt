@@ -1,0 +1,162 @@
+1. npm i react-router-dom --save styled-components
+
+
+2. Now create the components folder in src then go to the components folder
+ and create a new folder name Navbar. 
+In the Navbar folder create two files index,js, and NavbarElements.js.
+ Create one more folder in src name pages and 
+in pages create files name about.js, blogs.js, 
+index.js, signup.js, contact.js
+
+
+3. The updated dependencies in package.json file
+
+"dependencies": {
+        "@testing-library/jest-dom": "^5.17.0",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.19.0",
+        "react-scripts": "5.0.1",
+        "styled-components": "^6.1.1",
+        "web-vitals": "^2.1.4"
+},
+
+
+
+4.
+// Filename - pages/contact.js
+
+import React from "react";
+
+const Contact = () => {
+	return (
+		<div>
+			<h1>
+				Mail us on 
+				feedback@geeksforgeeks.org
+			</h1>
+		</div>
+	);
+};
+
+
+// Filename - App.js
+
+import React from "react";
+import Navbar from "./components/Navbar";
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+} from "react-router-dom";
+import Home from "./pages";
+import About from "./pages/about";
+import Blogs from "./pages/blogs";
+import SignUp from "./pages/signup";
+import Contact from "./pages/contact";
+
+function App() {
+	return (
+		<Router>
+			<Navbar />
+			<Routes>
+				<Route exact path="/" element={<Home />} />
+				<Route path="/about" element={<About />} />
+				<Route
+					path="/contact"
+					element={<Contact />}
+				/>
+				<Route path="/blogs" element={<Blogs />} />
+				<Route
+					path="/sign-up"
+					element={<SignUp />}
+				/>
+			</Routes>
+		</Router>
+	);
+}
+
+export default App;
+
+
+
+
+SECOND METHOD 
+
+import axios from "axios";
+import { useState } from 'react'
+import './App.css'
+import Services from './pages/Services'
+import Home from './pages/Home'
+import Contact from './pages/Contact'
+import {BrowserRouter as Router,Routes,Route,Link} from "react-router-dom"
+
+const  reactlogo = 'react.svg'
+const viteLogo = 'vite.svg'
+
+const reactLogoPath = `/static/${reactlogo}`
+const viteLogoPath = `/static/${viteLogo}`
+
+
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <>
+
+   <Router>
+     <Link  to="/" className="nav">Home</Link>
+     <Link  to="/services">Services</Link>
+     <Link  to="/contact">Contact</Link>
+
+   <Routes>
+   <Route path="/"  element={ <Home/>}/>
+   <Route path="/services"  element={ <Services/>}/>
+   <Route path="/contact"  element={ <Contact/>}/>
+   </Routes>
+
+    
+   </Router>
+      <div>
+      <a href="https://vitejs.dev" target="_blank">
+      <img src={viteLogoPath} className="logo" alt="Vite logo" />
+      </a>
+      <a href="https://react.dev" target="_blank">
+      <img src={reactLogoPath} className="logo react" alt="React logo" />
+      </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
+}
+
+export default App
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

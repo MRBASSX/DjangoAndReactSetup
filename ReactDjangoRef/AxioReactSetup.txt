@@ -1,0 +1,392 @@
+
+
+import axios from "axios";
+axios.get('/users')
+  .then(res => {
+    console.log(res.data);
+  });
+
+
+
+
+1. npm install axios
+
+
+
+
+2.Performing a POST request
+JSON
+axios.post('/user', {
+    firstName: 'Fred',
+    lastName: 'Flintstone'
+  })
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+
+
+
+
+
+
+3.Performing multiple concurrent requests
+
+function getUserAccount() {
+  return axios.get('/user/12345');
+}
+
+function getUserPermissions() {
+  return axios.get('/user/12345/permissions');
+}
+
+const [acct, perm] = await Promise.all([getUserAccount(), getUserPermissions()]);
+
+// OR
+
+Promise.all([getUserAccount(), getUserPermissions()])
+  .then(function ([acct, perm]) {
+    // ...
+  })
+
+
+4.Post an HTML form as JSON
+
+const {data} = await axios.post('/user', document.querySelector('#my-form'), {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+
+
+
+Forms
+Multipart (multipart/form-data)
+const {data} = await axios.post('https://httpbin.org/post', {
+    firstName: 'Fred',
+    lastName: 'Flintstone',
+    orders: [1, 2, 3],
+    photo: document.querySelector('#fileInput').files
+  }, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }
+)
+
+
+
+URL encoded form (application/x-www-form-urlencoded)
+
+const {data} = await axios.post('https://httpbin.org/post', {
+    firstName: 'Fred',
+    lastName: 'Flintstone',
+    orders: [1, 2, 3]
+  }, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+})
+
+
+
+When using then, you will receive the response as follows:
+
+axios.get('/user/12345')
+  .then(function (response) {
+    console.log(response.data);
+    console.log(response.status);
+    console.log(response.statusText);
+    console.log(response.headers);
+    console.log(response.config);
+  });
+
+
+
+
+
+
+
+
+When using then, you will receive the response as follows:
+
+axios.get('/user/12345')
+  .then(function (response) {
+    console.log(response.data);
+    console.log(response.status);
+    console.log(response.statusText);
+    console.log(response.headers);
+    console.log(response.config);
+  });
+
+
+const controller = new AbortController();
+
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
+
+axios.get('/user/12345', {
+  cancelToken: source.token,
+  signal: controller.signal
+}).catch(function (thrown) {
+  if (axios.isCancel(thrown)) {
+    console.log('Request canceled', thrown.message);
+  } else {
+    // handle error
+  }
+});
+
+axios.post('/user/12345', {
+  name: 'new name'
+}, {
+  cancelToken: source.token
+})
+
+// cancel the request (the message parameter is optional)
+source.cancel('Operation canceled by the user.');
+// OR
+controller.abort(); // the message parameter is not supported
+
+
+
+
+
+
+Multipart Bodies
+Posting data as multipart/form-data
+Using FormData API
+Browser
+const form = new FormData();
+form.append('my_field', 'my value');
+form.append('my_buffer', new Blob([1,2,3]));
+form.append('my_file', fileInput.files[0]);
+
+axios.post('https://example.com', form)
+The same result can be achieved using the internal Axios serializer and corresponding shorthand method:
+
+axios.postForm('https://httpbin.org/post', {
+  my_field: 'my value',
+  my_buffer: new Blob([1,2,3]),
+  my_file:  fileInput.files // FileList will be unwrapped as sepate fields
+});
+HTML form can be passes directly as a request payload
+
+Node.js
+import axios from 'axios';
+
+const form = new FormData();
+form.append('my_field', 'my value');
+form.append('my_buffer', new Blob(['some content']));
+
+axios.post('https://example.com', form)
+Since node.js does not currently support creating a Blob from a file, you can use a third-party package for this purpose.
+
+import {fileFromPath} from 'formdata-node/file-from-path'
+
+form.append('my_field', 'my value');
+form.append('my_file', await fileFromPath('/foo/bar.jpg'));
+
+axios.post('https://example.com', form)
+For Axios older than v1.3.0 you must import form-data package.
+
+const FormData = require('form-data');
+
+const form = new FormData();
+form.append('my_field', 'my value');
+form.append('my_buffer', new Buffer(10));
+form.append('my_file', fs.createReadStream('/foo/bar.jpg'));
+
+axios.post('https://example.com', form)
+?? Automatic serialization
+Starting from v0.27.0, Axios supports automatic object serialization to a FormData object if the request Content-Type header is set to multipart/form-data.
+
+The following request will submit the data in a FormData format (Browser & Node.js):
+
+import axios from 'axios';
+
+axios.post('https://httpbin.org/post', {
+  user: {
+    name: 'Dmitriy'
+  },
+  file: fs.createReadStream('/foo/bar.jpg')
+}, {
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+}).then(({data})=> console.log(data));
+Axios FormData serializer supports some special endings to perform the following operations:
+
+{} - serialize the value with JSON.stringify
+[] - unwrap the array-like object as separate fields with the same key
+NOTE: unwrap/expand operation will be used by default on arrays and FileList objects
+
+FormData serializer supports additional options via config.formSerializer: object property to handle rare cases:
+
+visitor: Function - user-defined visitor function that will be called recursively to serialize the data object to a FormData object by following custom rules.
+
+dots: boolean = false - use dot notation instead of brackets to serialize arrays and objects;
+
+metaTokens: boolean = true - add the special ending (e.g user{}: '{"name": "John"}') in the FormData key. The back-end body-parser could potentially use this meta-information to automatically parse the value as JSON.
+
+indexes: null|false|true = false - controls how indexes will be added to unwrapped keys of flat array-like objects
+
+null - don't add brackets (arr: 1, arr: 2, arr: 3)
+false(default) - add empty brackets (arr[]: 1, arr[]: 2, arr[]: 3)
+true - add brackets with indexes (arr[0]: 1, arr[1]: 2, arr[2]: 3)
+Let's say we have an object like this one:
+
+const obj = {
+  x: 1,
+  arr: [1, 2, 3],
+  arr2: [1, [2], 3],
+  users: [{name: 'Peter', surname: 'Griffin'}, {name: 'Thomas', surname: 'Anderson'}],
+  'obj2{}': [{x:1}]
+};
+The following steps will be executed by the Axios serializer internally:
+
+const formData= new FormData();
+formData.append('x', '1');
+formData.append('arr[]', '1');
+formData.append('arr[]', '2');
+formData.append('arr[]', '3');
+formData.append('arr2[0]', '1');
+formData.append('arr2[1][0]', '2');
+formData.append('arr2[2]', '3');
+formData.append('users[0][name]', 'Peter');
+formData.append('users[0][surname]', 'Griffin');
+formData.append('users[1][name]', 'Thomas');
+formData.append('users[1][surname]', 'Anderson');
+formData.append('obj2{}', '[{"x":1}]');
+import axios from 'axios';
+
+axios.post('https://httpbin.org/post', {
+  'myObj{}': {x: 1, s: "foo"},
+  'files[]': document.querySelector('#fileInput').files 
+}, {
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+}).then(({data})=> console.log(data));
+Axios supports the following shortcut methods: postForm, putForm, patchForm which are just the corresponding http methods with the content-type header preset to multipart/form-data.
+
+FileList object can be passed directly:
+
+await axios.postForm('https://httpbin.org/post', document.querySelector('#fileInput').files)
+All files will be sent with the same field names: files[];
+
+
+
+
+Interceptors
+You can intercept requests or responses before they are handled by then or catch.
+
+// Add a request interceptor
+axios.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+
+// Add a response interceptor
+axios.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+  });
+If you need to remove an interceptor later you can.
+
+const myInterceptor = axios.interceptors.request.use(function () {/*...*/});
+axios.interceptors.request.eject(myInterceptor);
+You can add interceptors to a custom instance of axios.
+
+const instance = axios.create();
+instance.interceptors.request.use(function () {/*...*/});
+
+
+
+
+
+
+MODEL 
+
+import PayrollRuns from "./PayrollRuns";
+import PayrollDetails from "./PayrollDetails";
+import {useEffect, useState} from "react";
+import moment from "moment";
+
+
+const PayrollWrapper = () => {
+
+    // Set State for Payroll data
+    const [payrollRuns, setPayrollRuns] = useState([])
+
+    // Fetch data --> 1.)
+    useEffect(() => {
+
+        // Fetch the Payroll Data related to the logged in User
+        fetch(`http://127.0.0.1:8000/api/lastpayrollruns/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                 Authorization: `Token ${localStorage.getItem('token')}`
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+          setPayrollRuns(data)
+          });
+    }, []);
+
+    // --> 2.)
+    const runItems = props.payrollRuns.map((run) =>
+        <div key={run.id} className="flex justify-between p-2 text-lg text-base">
+            <div>
+                {moment(run.month.period).format('YYYY MMMM')}:
+                Paid {run.payroll_run_items.length} talents
+            </div>
+
+            <div>
+                {run.payroll_run_items.reduce((acc, value) => {
+                  return parseFloat(value.amount.toFixed(2)) + acc; // Add 'value.amount' to 'acc'
+                }, 0)}
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="runs-wrapper bg-white rounded-xl h-full w-48 shadow-sx-shadow p-4 flex flex-col">
+            <h1 className="border-b-2 pb-4">Payroll Runs</h1>
+            <div className="grow overflow-auto p-4">{runItems}</div>
+        </div>
+    )
+}
+
+export default PayrollWrapper
+
+
+
+DJANGO ENDPOINT
+
+class PayrollRun(APIView):
+    """
+    Retrieve payroll runs including line items for a company
+    """
+    def get(self, request):
+        company = Company.objects.get(userprofile__user=request.user)
+        payroll_runs = Payroll.objects.filter(company=company).order_by('-month')
+        serializer = PayrollSerializer(payroll_runs, many=True)
+
+        return Response(serializer.data)
+
+
+message.filter((news, idx) => idx < 3,news=>news.price >10,).map((news)

@@ -1,0 +1,47 @@
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+STATICFILES_DIRS = [
+    BASE_DIR / "../frontend/dist",
+    BASE_DIR / "../frontend/public",
+    BASE_DIR / "static/",
+
+]
+STATIC_ROOT = BASE_DIR / "../frontend/static"
+
+
+# Product mode
+MEDIA_URL = 'static/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+
+# Development mode
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+
+
+
+
+
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+STATICFILES_DIRS = [
+    BASE_DIR / "../frontend/dist",
+    BASE_DIR / "../frontend/public",
+    BASE_DIR / "static/",
+
+]
+STATIC_ROOT = BASE_DIR / "../frontend/static"
+
+if DEBUG==True :
+    # Development mode
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+
+
+else:
+    # Production mode
+    MEDIA_URL = 'static/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+
+
