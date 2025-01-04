@@ -103,8 +103,45 @@ path
 
 {% block content %}
 
-
-
-
-
 	{% endblock %}
+
+
+
+
+STATIC SETUP....
+
+if DEBUG == True:
+    STATIC_URL = 'static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+    STATICFILES_DIRS = [
+    BASE_DIR / "frontend/dist",
+    # BASE_DIR / "../frontend/public",
+    # BASE_DIR / "static/",
+    ]
+    STATIC_ROOT = BASE_DIR / "frontend/static"
+    # Development mode
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+
+
+else:
+    STATIC_URL = 'static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+    STATICFILES_DIRS = [
+    BASE_DIR / "frontend/dist",
+    # BASE_DIR / "../frontend/public",
+    # BASE_DIR / "static/",
+    ]
+    STATIC_ROOT = BASE_DIR / "frontend/static"
+    
+    # Production mode
+    MEDIA_URL = 'static/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend/static/media/')
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
+    }
+
+
